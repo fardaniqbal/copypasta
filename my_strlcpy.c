@@ -1,6 +1,6 @@
 #include <string.h>
 
-/* Implementation of Theo de Raadt's strlcpy() as specified in [1].  Copy up to
+/* Implementation of Theo de Raadt's strlcpy() as presented in [1].  Copy up to
    NBYTE-1 bytes from nul-terminated string SRC to DST.  DST is _guaranteed_ to
    be nul-terminated if NBYTE > 0.  Return strlen(SRC).  See de Raadt's paper
    for rationale.
