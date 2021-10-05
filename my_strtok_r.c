@@ -11,8 +11,8 @@
 #undef strtok_r
 #define strtok_r my_strtok_r_ /* prevent name collision on POSIX systems */
 
-/* Parse STR into a sequence of DELIM-delimited tokens.  The first call returns
-   the first token from STR.  Call with STR = NULL to get subsequent tokens.
+/* Tokenize STR into DELIM-delimited tokens.  A call with non-NULL STR returns
+   the first token.  Follow-up calls with STR = NULL return subsequent tokens.
    Return NULL when no more tokens remain.  *CONTEXT stores the parser's state
    between successive calls.  This function writes to STR, so behavior is
    undefined if STR is constant (e.g., "literals like this"). */
