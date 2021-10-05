@@ -4,3 +4,4 @@ my_strlcpy
 my_strtok_r
 *.exe
 *.o
+.*.swp
