@@ -32,11 +32,28 @@ strtok_r(char *str, const char *delim, char **context)
 
 /* - test ------------------------------------------------------------------ */
 
-#undef NDEBUG
-#include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+/* verify(EXPR, FMT, ...) crashes with printf-like message FMT if !EXPR. */
+#define verify (verify_file = __FILE__, verify_line = __LINE__, verify_)
+static const char *verify_file;
+static int verify_line;
+
+static void
+verify_(int expr, const char *fmt, ...)
+{
+  va_list ap;
+  if (expr)
+    return;
+  fprintf(stderr, "%s:%d: ", verify_file, verify_line);
+  va_start(ap, fmt);
+  vfprintf(stderr, fmt, ap);
+  fprintf(stderr, "\n");
+  va_end(ap);
+  exit(1);
+}
 
 /* Verify that strtok_r() tokenizes STR as expected.  Specify the expected
    tokens in the var args.  The final var arg must be NULL. */
@@ -50,8 +67,12 @@ verify_strtok(const char *str, const char *delim, ...)
   strcpy(buf, str);
   va_start(ap, delim);
   for (bp = buf; (tok = strtok_r(bp, delim, &ctx)) != NULL; bp = NULL) {
-    /* TODO */
+    const char *expect = va_arg(ap, char *);
+    verify(expect != NULL, "extra token '%s' in '%s'", tok, str);
+    verify(!strcmp(tok, expect), "bad token '%s'; expected '%s'", tok, expect);
+    verify(*tok != '\0', "strtok_r returned empty token from '%s'", str);
   }
+  verify(va_arg(ap, char *) == NULL, "didn't get all tokens in '%s'", str);
   va_end(ap);
   free(buf);
 }
@@ -59,7 +80,7 @@ verify_strtok(const char *str, const char *delim, ...)
 int
 main(void)
 {
-  /* TODO */
-  (void) verify_strtok;
+  verify_strtok("this is a test", " ", "this", "is", "a", "test", 0);
+  /* TODO: more thorough testing */
   return 0;
 }
