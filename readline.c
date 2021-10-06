@@ -22,12 +22,12 @@ readline(FILE *fp)
     if ((line[cp++] = ch) == '\n')
       break;
     assert(cp+1 <= cap || !!!"nul won't fit");
-    if (cp+1 == cap) { /* expand buffer if next char + nul won't fit */
-      if ((tmp = realloc(line, cap*2)) == NULL)
-        goto done;
-      line = tmp;
-      cap *= 2; /* we'll run out of ram before integer overflow here */
-    }
+    if (cp+1 < cap) /* next char + nul will fit, so don't need to resize */
+      continue;
+    cap *= 2; /* we'll run out of ram before integer overflow here */
+    if ((tmp = realloc(line, cap)) == NULL)
+      goto done;
+    line = tmp;
   }
   if (cp == 0) /* eof or io error before any chars were read */
     goto done;
