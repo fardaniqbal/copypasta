@@ -1,3 +1,6 @@
+/* Public domain readline() implementation: read a stream line-by-line.  Unlike
+   fgets(), this is _not_ limited to fixed-size output string, and does not
+   truncate input lines.  NB: different call interface vs. GNU's readline(). */
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
