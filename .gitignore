@@ -1,7 +1,7 @@
-my_bsearch_r
-my_readline
-my_strlcpy
-my_strtok_r
+bsearch_r
+readline
+strlcpy
+strtok_r
 *.exe
 *.o
 .*.swp

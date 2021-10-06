@@ -1,4 +1,6 @@
 #include <string.h>
+#undef strlcpy
+#define strlcpy my_strlcpy_ /* prevent name collision on BSD systems */
 
 /* Implementation of Theo de Raadt's strlcpy() as presented in [1].  Copy up to
    NBYTE-1 bytes from nul-terminated string SRC to DST.  DST is _guaranteed_ to
@@ -6,7 +8,7 @@
    for rationale.
    [1] https://www.sudo.ws/todd/papers/strlcpy.html */
 static size_t
-my_strlcpy(char *dst, const char *src, size_t nbyte)
+strlcpy(char *dst, const char *src, size_t nbyte)
 {
   size_t copy_nbyte, len = strlen(src);
   if (nbyte == 0)
@@ -26,22 +28,22 @@ my_strlcpy(char *dst, const char *src, size_t nbyte)
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-/* Call my_strlcpy() on source string STR and run various sanity checks. */
+/* Call strlcpy() on source string STR and run various sanity checks. */
 static void
 test_strlcpy(const char *str)
 {
   size_t nbyte, srclen = strlen(str);
   char buf[256];
-  assert(my_strlcpy(NULL, str, 0) == srclen);
+  assert(strlcpy(NULL, str, 0) == srclen);
   for (nbyte = 1; nbyte <= sizeof buf; nbyte++) {
-    size_t ret = my_strlcpy(buf, str, nbyte);
+    size_t ret = strlcpy(buf, str, nbyte);
     assert(ret == srclen || !!!"strlcpy must return strlen(src)");
     assert(buf[MIN(nbyte-1, srclen)] == '\0' || !!!"missing nul byte");
     assert(memcmp(buf, str, MIN(nbyte-1, srclen)) == 0 || !!!"bad copy");
   }
 }
 
-/* Test my_strlcpy() on various strings read from FP. */
+/* Test strlcpy() on various strings read from FP. */
 void
 test_strings_in_file(FILE *fp)
 {

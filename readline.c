@@ -1,12 +1,14 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#undef readline
+#define readline my_readline_ /* prevent name collision on GNU systems */
 
 /* Read a single line from FP into a malloc()'d buffer and return it in *LINE.
    The caller is expected to free() the buffer returned in *LINE.  Handles LF
    and CRLF line endings.  Return 0 on success, non-0 on error or EOF. */
 static int
-my_readline(char **line, FILE *fp)
+readline(char **line, FILE *fp)
 {
   size_t cp = 0, cap = 8;
   int ch;
@@ -56,7 +58,7 @@ main(int argc, char *argv[])
 {
   char *line;
   if (argc == 1) {
-    while (my_readline(&line, stdin) == 0)
+    while (readline(&line, stdin) == 0)
       puts(line), free(line);
     if (ferror(stdin))
       fprintf(stderr, "read error: %s\n", strerror(errno));
@@ -68,7 +70,7 @@ main(int argc, char *argv[])
       if ((fp = fopen(file, "r")) == NULL)
         fprintf(stderr, "%s: fopen() failed: %s\n", file, strerror(errno));
       else {
-        while (my_readline(&line, fp) == 0)
+        while (readline(&line, fp) == 0)
           puts(line), free(line);
         if (ferror(fp))
           fprintf(stderr, "%s: read error: %s\n", file, strerror(errno));
