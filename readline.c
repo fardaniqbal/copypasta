@@ -2,29 +2,30 @@
 #include <stdlib.h>
 #include <stdio.h>
 #undef readline
-#define readline my_readline_ /* prevent name collision on GNU systems */
+#define readline my_readline_ /* avoid name collision with GNU readline */
 
-/* Read a single line from FP into a malloc()'d buffer and return it in *LINE.
-   The caller is expected to free() the buffer returned in *LINE.  Handles LF
-   and CRLF line endings.  Return 0 on success, non-0 on error or EOF. */
-static int
-readline(char **line, FILE *fp)
+/* Read a line from FP and return it in a malloc()'d buffer, handling LF and
+   CRLF line endings.  Caller must free() the returned buffer.  Return NULL on
+   EOF or error.  Caller can distinguish EOF vs. i/o error with ferror(FP), and
+   other errors with errno (malloc() failure, etc). */
+static char *
+readline(FILE *fp)
 {
+  char *line, *tmp;
   size_t cp = 0, cap = 8;
   int ch;
-  if ((*line = malloc(cap)) == NULL)
-    return -1;
+  if ((line = malloc(cap)) == NULL)
+    return NULL;
 
   while ((ch = fgetc(fp)) != EOF) {
     assert(cp+2 <= cap || !!!"next char + nul won't fit");
-    if (((*line)[cp++] = ch) == '\n')
+    if ((line[cp++] = ch) == '\n')
       break;
     assert(cp+1 <= cap || !!!"nul won't fit");
-    if (cp+1 == cap) { /* expand buffer if nul won't fit */
-      char *tmp = realloc(*line, cap*2);
-      if (tmp == NULL)
+    if (cp+1 == cap) { /* expand buffer if next char + nul won't fit */
+      if ((tmp = realloc(line, cap*2)) == NULL)
         goto done;
-      *line = tmp;
+      line = tmp;
       cap *= 2; /* we'll run out of ram before integer overflow here */
     }
   }
@@ -32,18 +33,17 @@ readline(char **line, FILE *fp)
     goto done;
 
   assert(cp < cap || !!!"nul won't fit");
-  if (cp >= 2 && (*line)[cp-2] == '\r') /* handle crlf */
-    (*line)[cp-2] = '\0';
-  else if ((*line)[cp-1] == '\n')       /* just lf */
-    (*line)[cp-1] = '\0';
-  else                                  /* hit eof without terminating lf */
-    (*line)[cp] = '\0';
-  return 0;
+  if (cp >= 2 && line[cp-2] == '\r') /* handle crlf */
+    line[cp-2] = '\0';
+  else if (line[cp-1] == '\n')       /* just lf */
+    line[cp-1] = '\0';
+  else                               /* hit eof without terminating lf */
+    line[cp] = '\0';
+  return line;
 
 done:
-  free(*line);
-  *line = NULL;
-  return -1;
+  free(line);
+  return NULL;
 }
 
 /* - test ------------------------------------------------------------------ */
@@ -58,7 +58,7 @@ main(int argc, char *argv[])
 {
   char *line;
   if (argc == 1) {
-    while (readline(&line, stdin) == 0)
+    while ((line = readline(stdin)) != NULL)
       puts(line), free(line);
     if (ferror(stdin))
       fprintf(stderr, "read error: %s\n", strerror(errno));
@@ -70,7 +70,7 @@ main(int argc, char *argv[])
       if ((fp = fopen(file, "r")) == NULL)
         fprintf(stderr, "%s: fopen() failed: %s\n", file, strerror(errno));
       else {
-        while (readline(&line, fp) == 0)
+        while ((line = readline(fp)) != NULL)
           puts(line), free(line);
         if (ferror(fp))
           fprintf(stderr, "%s: read error: %s\n", file, strerror(errno));
