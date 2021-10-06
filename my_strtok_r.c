@@ -81,6 +81,19 @@ int
 main(void)
 {
   verify_strtok("this is a test", " ", "this", "is", "a", "test", 0);
-  /* TODO: more thorough testing */
+  verify_strtok("multiple  consecutive    delimiters", " ",
+                "multiple", "consecutive", "delimiters", 0);
+  verify_strtok(" \r\nleading.delimiters", " \r\n.",
+                "leading", "delimiters", 0);
+  verify_strtok("trailing|-|delimiters-|/", "|-/",
+                "trailing", "delimiters", 0);
+  verify_strtok("", "", 0); /* empty string, no delims */
+  verify_strtok("", "delimiters", 0); /* empty string */
+  verify_strtok("this should be a single token", "", /* no delims */
+                "this should be a single token", 0);
+  verify_strtok("don't,return,,,empty,tokens,,,", ",",
+                "don't", "return", "empty", "tokens", 0);
+  verify_strtok("one-token", " ", "one-token", 0);
+  verify_strtok("one-token", "", "one-token", 0);
   return 0;
 }
