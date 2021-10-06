@@ -39,7 +39,7 @@ readline(FILE *fp)
     line[cp-1] = '\0';
   else                               /* hit eof without terminating lf */
     line[cp] = '\0';
-  return line;
+  return (tmp = realloc(line, cp+1)) ? tmp : line; /* trim if possible */
 
 done:
   free(line);
