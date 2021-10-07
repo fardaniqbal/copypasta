@@ -1,12 +1,13 @@
+/* Public domain implementation of strlcpy (an alternative to strncpy).  See
+   Miller and de Raadt's paper for rationale:
+   [https://www.sudo.ws/todd/papers/strlcpy.html]. */
 #include <string.h>
 #undef strlcpy
 #define strlcpy my_strlcpy_ /* prevent name collision on BSD systems */
 
-/* Implementation of Theo de Raadt's strlcpy() as presented in [1].  Copy up to
-   NBYTE-1 bytes from nul-terminated string SRC to DST.  DST is _guaranteed_ to
-   be nul-terminated if NBYTE > 0.  Return strlen(SRC).  See de Raadt's paper
-   for rationale.
-   [1] https://www.sudo.ws/todd/papers/strlcpy.html */
+/* Copy up to NBYTE-1 bytes from null-terminated string SRC to DST.  Unlike
+   strncpy(), DST is guaranteed to be null-terminated on return if NBYTE > 0.
+   Return strlen(SRC). */
 static size_t
 strlcpy(char *dst, const char *src, size_t nbyte)
 {
