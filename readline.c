@@ -21,15 +21,13 @@ readline(FILE *fp)
     return NULL;
 
   while ((ch = fgetc(fp)) != EOF) {
-    assert(cp+2 <= cap || !!!"next char + nul won't fit");
+    assert(cp+2 <= cap || !!!"current char + nul won't fit");
     if ((line[cp++] = ch) == '\n')
       break;
-    assert(cp+1 <= cap || !!!"nul won't fit");
-    if (cp+1 < cap) /* next char + nul will fit, so don't need to resize */
+    if (cp+2 <= cap) /* next char + nul will fit, so no need to resize */
       continue;
-    cap *= 2; /* we'll run out of ram before integer overflow here */
-    if ((tmp = realloc(line, cap)) == NULL)
-      goto done;
+    if (cap > (~(size_t) 0)/2 || (tmp = realloc(line, cap *= 2)) == NULL)
+      goto done; /* integer overflow on cap, or realloc failed */
     line = tmp;
   }
   if (cp == 0) /* eof or io error before any chars were read */
