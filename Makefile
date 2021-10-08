@@ -1,4 +1,4 @@
-CFLAGS=-std=gnu89 -Wall -pedantic-errors -Os
+CFLAGS=-std=gnu89 -Wall -pedantic-errors -Os -g3
 all: bsearch_r readline strlcpy strtok_r
 bsearch_r: bsearch_r.o
 readline: readline.o
