@@ -138,26 +138,29 @@ typedef int verify_unused[!!sizeof &verify_strtok_asdf];
 int
 main(void)
 {
-  do_the_thing((0, "this is a test", " ", "this", "is", "a", "test", 0));
-  do_the_thing((0, "1 2 3", " ", "1", "2", "3", 0));
-  /*do_the_thing((0, "this is a test", " ", "this", "is", "a", "test", 0));*/
-  do_the_thing((0, "multiple consecutive delimiters", " ",
-                "multiple", "consecutive", "delimiters", 0));
-#if 0
+  /* NOTE: C++ often defines NULL as 0 (instead of, e.g., ((void*)0)).  Since 0
+     is of type int and not pointer (which may be passed to variadic functions
+     differently, esp. on 64-bit architectures), passing NULL as a var arg
+     that's expected to be a pointer is _incorrect_ when compiling as C++.
+     What's worse: this undefined behavior may be masked depending on compiler
+     optimization flags.  Therefore, we define a pointer-typed variable NP set
+     to NULL, and pass NP to variadic functions instead of NULL. */
+  const void *const NP = NULL;
+  do_the_thing((0, "this is a test", " ", "this", "is", "a", "test", NULL));
+  do_the_thing((0, "1 2 3", " ", "1", "2", "3", NULL));
   verify_strtok(0, "multiple  consecutive    delimiters", " ",
-                "multiple", "consecutive", "delimiters", 0/*, 0*/);
-#endif
+                "multiple", "consecutive", "delimiters", NULL);
   do_the_thing((0, " \r\nleading.delimiters", " \r\n.",
-                "leading", "delimiters", 0));
+                "leading", "delimiters", NULL));
   do_the_thing((0, "trailing|-|delimiters-|/", "|-/",
-                "trailing", "delimiters", 0));
-  do_the_thing((0, "", "", 0)); /* empty string, no delims */
-  do_the_thing((0, "", "delimiters", 0)); /* empty string */
+                "trailing", "delimiters", NULL));
+  do_the_thing((0, "", "", NULL)); /* empty string, no delims */
+  do_the_thing((0, "", "delimiters", NULL)); /* empty string */
   do_the_thing((0, "this should be a single token", "", /* no delims */
-                "this should be a single token", 0));
+                "this should be a single token", NULL));
   do_the_thing((0, "don't,return,,,empty,tokens,,,", ",",
-                "don't", "return", "empty", "tokens", 0));
-  do_the_thing((0, "one-token", " ", "one-token", 0));
-  do_the_thing((0, "one-token", "", "one-token", 0));
+                "don't", "return", "empty", "tokens", NULL));
+  do_the_thing((0, "one-token", " ", "one-token", NULL));
+  do_the_thing((0, "one-token", "", "one-token", NULL));
   return 0;
 }
