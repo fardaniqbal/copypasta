@@ -2,6 +2,7 @@ bsearch_r
 readline
 strlcpy
 strtok_r
+xmalloc
 *.exe
 *.o
 .*.swp
