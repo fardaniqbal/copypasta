@@ -71,14 +71,17 @@ test_strtok(int call_depth, const char *str, const char *delim, ...)
   if ((buf = malloc(strlen(str) + 1)) == NULL)
     fprintf(stderr, "malloc() failed\n"), exit(1);
   strcpy(buf, str);
+
   va_start(ap, delim);
   for (bp = buf; (tok = strtok_r(bp, delim, &ctx)) != NULL; bp = NULL) {
-    const char *expect = va_arg(ap, char *);
+    const char *tp, *expect = va_arg(ap, char *);
     verify(expect != NULL, "extra token '%s' in '%s'", tok, str);
     verify(!strcmp(tok, expect), "bad token '%s'; expected '%s'", tok, expect);
     verify(*tok != '\0', "strtok_r returned empty token from '%s'", str);
     test_strtok(call_depth+1, "verify strtok_r maintains reentrancy", " ",
                 "verify", "strtok_r", "maintains", "reentrancy", (void *) 0);
+    for (tp = tok; *tp != '\0'; tp++)
+      verify(!strchr(delim, *tp), "token '%s' contains delimiter", tok);
   }
   verify(va_arg(ap, char *) == NULL, "didn't get all tokens in '%s'", str);
   va_end(ap);
