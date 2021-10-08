@@ -59,42 +59,13 @@ verify_(int expr, const char *fmt, ...)
   exit(1);
 }
 
-#define STRTOK_R_DEBUG 0
-
-static void
-verify_strtok_asdf(int call_depth, const char *str, const char *delim, ...)
-{
-  const char *expect;
-  va_list ap;
-  fprintf(stderr, "%*s%s verify_strtok_asdf: depth=%d, str='%s'\n",
-          call_depth, "", "entering", call_depth, str);
-  va_start(ap, delim);
-  while ((expect = va_arg(ap, char *)) != NULL)
-    fprintf(stderr, "%*s  expected='%s'\n", call_depth, "", expect);
-  va_end(ap);
-  fprintf(stderr, "%*s%s verify_strtok_asdf\n", call_depth, "", "exiting");
-}
-
 /* Verify that strtok_r() tokenizes STR as expected.  Specify the expected
    tokens in the var args.  The final var arg must be NULL. */
 static void
-verify_strtok(int call_depth, const char *str, const char *delim, ...)
+test_strtok(int call_depth, const char *str, const char *delim, ...)
 {
   char *buf, *bp, *tok, *ctx;
   va_list ap;
-#if STRTOK_R_DEBUG
-  {
-    const char *expect;
-    fprintf(stderr, "%*s entering verify_strtok(depth=%d, str='%s')...\n",
-            call_depth, "", call_depth, str);
-    fprintf(stderr, "%*s depth %d, str='%s'\n", call_depth, "", call_depth, str);
-    va_start(ap, delim);
-    while ((expect = va_arg(ap, char *)) != NULL)
-      fprintf(stderr, "%*s addr=%16p, ", call_depth, "", expect),
-        fprintf(stderr, "expected token = '%s'\n", expect);
-    va_end(ap);
-  }
-#endif
   if (call_depth >= 3) /* yes, call depth limit is indeed arbitrary */
     return;
   if ((buf = malloc(strlen(str) + 1)) == NULL)
@@ -103,37 +74,16 @@ verify_strtok(int call_depth, const char *str, const char *delim, ...)
   va_start(ap, delim);
   for (bp = buf; (tok = strtok_r(bp, delim, &ctx)) != NULL; bp = NULL) {
     const char *expect = va_arg(ap, char *);
-#if STRTOK_R_DEBUG
-    fprintf(stderr, "%*s  expect='%s'\n", call_depth, "", expect);
-    fprintf(stderr, "%*s  tok = '%s'\n", call_depth, "", tok);
-#endif
     verify(expect != NULL, "extra token '%s' in '%s'", tok, str);
     verify(!strcmp(tok, expect), "bad token '%s'; expected '%s'", tok, expect);
     verify(*tok != '\0', "strtok_r returned empty token from '%s'", str);
-    /*verify_strtok(call_depth+1, "verify strtok_r maintains reentrancy", " ",
-                  "verify", "strtok_r", "maintains", "reentrancy", 0);*/
+    test_strtok(call_depth+1, "verify strtok_r maintains reentrancy", " ",
+                "verify", "strtok_r", "maintains", "reentrancy", (void *) 0);
   }
-#if STRTOK_R_DEBUG
-  {
-    const char *expect = va_arg(ap, char *);
-    fprintf(stderr, "%*s exiting verify_strtok(depth=%d, str='%s')\n",
-            call_depth, "", call_depth, str);
-    verify(expect == NULL, "didn't get all tokens in '%s' ('%p')", str, expect);
-  }
-#else
   verify(va_arg(ap, char *) == NULL, "didn't get all tokens in '%s'", str);
-#endif
   va_end(ap);
   free(buf);
 }
-
-#if STRTOK_R_DEBUG
-# define do_the_thing(args) \
-    (verify_strtok_asdf args, verify_strtok args, fprintf(stderr, "\n\n----\n\n"))
-#else
-# define do_the_thing(args) verify_strtok args
-typedef int verify_unused[!!sizeof &verify_strtok_asdf];
-#endif
 
 int
 main(void)
@@ -146,21 +96,22 @@ main(void)
      optimization flags.  Therefore, we define a pointer-typed variable NP set
      to NULL, and pass NP to variadic functions instead of NULL. */
   const void *const NP = NULL;
-  do_the_thing((0, "this is a test", " ", "this", "is", "a", "test", NULL));
-  do_the_thing((0, "1 2 3", " ", "1", "2", "3", NULL));
-  verify_strtok(0, "multiple  consecutive    delimiters", " ",
-                "multiple", "consecutive", "delimiters", NULL);
-  do_the_thing((0, " \r\nleading.delimiters", " \r\n.",
-                "leading", "delimiters", NULL));
-  do_the_thing((0, "trailing|-|delimiters-|/", "|-/",
-                "trailing", "delimiters", NULL));
-  do_the_thing((0, "", "", NULL)); /* empty string, no delims */
-  do_the_thing((0, "", "delimiters", NULL)); /* empty string */
-  do_the_thing((0, "this should be a single token", "", /* no delims */
-                "this should be a single token", NULL));
-  do_the_thing((0, "don't,return,,,empty,tokens,,,", ",",
-                "don't", "return", "empty", "tokens", NULL));
-  do_the_thing((0, "one-token", " ", "one-token", NULL));
-  do_the_thing((0, "one-token", "", "one-token", NULL));
+  test_strtok(0, "this is a test", " ", "this", "is", "a", "test", NP);
+  test_strtok(0, "1 2 3", " ", "1", "2", "3", NP);
+  test_strtok(0, "multiple  consecutive    delimiters", " ",
+              "multiple", "consecutive", "delimiters", NP);
+  test_strtok(0, " \r\nleading.delimiters", " \r\n.",
+              "leading", "delimiters", NP);
+  test_strtok(0, "trailing|-|delimiters-|/", "|-/",
+              "trailing", "delimiters", NP);
+  test_strtok(0, "", "", NP); /* empty string, no delims */
+  test_strtok(0, "", "delimiters", NP); /* empty string */
+  test_strtok(0, "this should be a single token", "", /* no delims */
+              "this should be a single token", NP);
+  test_strtok(0, "don't,return,,,empty,tokens,,,", ",",
+              "don't", "return", "empty", "tokens", NP);
+  test_strtok(0, "one-token", " ", "one-token", NP);
+  test_strtok(0, "one-token", "", "one-token", NP);
+  /* TODO: more thorough testing. */
   return 0;
 }
