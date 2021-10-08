@@ -41,6 +41,9 @@ strtok_r(char *str, const char *delim, char **context)
 static const char *verify_file;
 static int verify_line;
 
+#if defined(__GNUC__) || defined(__llvm__)
+__attribute__((format(printf, 2, 3)))
+#endif
 static void
 verify_(int expr, const char *fmt, ...)
 {
@@ -66,10 +69,8 @@ verify_strtok_asdf(int call_depth, const char *str, const char *delim, ...)
   fprintf(stderr, "%*s%s verify_strtok_asdf: depth=%d, str='%s'\n",
           call_depth, "", "entering", call_depth, str);
   va_start(ap, delim);
-#if 1
   while ((expect = va_arg(ap, char *)) != NULL)
     fprintf(stderr, "%*s  expected='%s'\n", call_depth, "", expect);
-#endif
   va_end(ap);
   fprintf(stderr, "%*s%s verify_strtok_asdf\n", call_depth, "", "exiting");
 }
