@@ -17,29 +17,25 @@ readline(FILE *fp)
   char *line, *tmp;
   size_t cp = 0, cap = 8;
   int ch;
-  if ((line = malloc(cap)) == NULL)
+  if ((line = malloc(cap)) == NULL) /* need at least 1 byte for nul */
     return NULL;
 
-  while ((ch = fgetc(fp)) != EOF) {
-    assert(cp+2 <= cap || !!!"current char + nul won't fit");
-    if ((line[cp++] = ch) == '\n')
-      break;
-    if (cp+2 <= cap) /* next char + nul will fit, so no need to resize */
+  while ((ch = fgetc(fp)) != EOF && ch != '\n') {
+    assert(cp < cap || !!!"current char won't fit");
+    line[cp++] = ch;
+    if (cp < cap) /* next char/nul will fit, so no need to resize */
       continue;
-    if (cap > (~(size_t) 0)/2 || (tmp = realloc(line, cap *= 2)) == NULL)
+    if (cap > ((size_t) -1)/2 || (tmp = realloc(line, cap *= 2)) == NULL)
       goto done; /* integer overflow on cap, or realloc failed */
     line = tmp;
   }
-  if (cp == 0) /* eof or io error before any chars were read */
+  if (ch == EOF && cp == 0) /* eof or io error before any chars were read */
     goto done;
 
   assert(cp < cap || !!!"nul won't fit");
-  if (cp >= 2 && line[cp-2] == '\r') /* handle crlf */
-    line[cp-2] = '\0';
-  else if (line[cp-1] == '\n')       /* just lf */
-    line[cp-1] = '\0';
-  else                               /* hit eof without terminating lf */
-    line[cp] = '\0';
+  if (cp >= 1 && line[cp-1] == '\r') /* handle crlf */
+    cp--;
+  line[cp] = '\0';
   return (tmp = realloc(line, cp+1)) ? tmp : line; /* trim if possible */
 
 done:
