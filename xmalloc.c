@@ -18,7 +18,7 @@ xrealloc_(void *ptr, size_t sz, const char *file, int line, const char *expr)
     return ptr;
   fprintf(stderr, "%s:%d: %s failed.\n", file, line, expr);
   fprintf(stderr, "%s:%d: not enough memory to allocate %lu bytes.\n",
-         file, line, (unsigned long) sz);
+          file, line, (unsigned long) sz);
   exit(1);
 }
 
@@ -30,7 +30,7 @@ xcalloc_(size_t n, size_t sz, const char *file, int line, const char *expr)
     return ptr;
   fprintf(stderr, "%s:%d: %s failed.\n", file, line, expr);
   fprintf(stderr, "%s:%d: not enough memory to allocate %lu x %lu bytes.\n",
-         file, line, (unsigned long) n, (unsigned long) sz);
+          file, line, (unsigned long) n, (unsigned long) sz);
   exit(1);
 }
 typedef int xmalloc_unused_[!!sizeof &xrealloc_ + !!sizeof &xcalloc_];
