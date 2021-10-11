@@ -7,5 +7,5 @@ the public domain, unless mentioned otherwise.
 * readline.c - read from files line-by-line.
 * strlcpy.c - safer alternative to `strncpy`.
 * strtok_r.c - reentrant alternative to `strtok`.
-* xmalloc.c - alternatives to `malloc`/`realloc`/`calloc` that crash on
+* xmalloc.c - wrappers around `malloc`/`realloc`/`calloc` that crash on
   allocation failure with a message indicating file/line of failure.
