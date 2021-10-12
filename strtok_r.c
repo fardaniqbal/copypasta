@@ -20,12 +20,11 @@ static char *
 strtok_r(char *str, const char *delim, char **context)
 {
   char *tok, *s = str ? str : *context;
-  for (*context = s; *s != '\0' && strchr(delim, *s); s++)
+  for (; *s != '\0' && strchr(delim, *s); s++)
     continue;
-  for (tok = s; *s != '\0' && !strchr(delim, *s); *context = ++s)
+  for (tok = s; *s != '\0' && !strchr(delim, *s); s++)
     continue;
-  if (*s != '\0')
-    *context = s + 1;
+  *context = s + (*s != '\0');
   *s = '\0';
   return *tok == '\0' ? NULL : tok;
 }
