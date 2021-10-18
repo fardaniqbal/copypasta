@@ -19,11 +19,9 @@
 static char *
 strtok_r(char *str, const char *delim, char **context)
 {
-  char *tok, *s = str ? str : *context;
-  for (; *s != '\0' && strchr(delim, *s); s++)
-    continue;
-  for (tok = s; *s != '\0' && !strchr(delim, *s); s++)
-    continue;
+  char *s = str ? str : *context;
+  char *tok = s + strspn(s, delim);
+  s = tok + strcspn(tok, delim);
   *context = s + (*s != '\0');
   *s = '\0';
   return *tok == '\0' ? NULL : tok;
