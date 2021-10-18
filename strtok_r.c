@@ -114,6 +114,7 @@ main(void)
               "don't", "return", "empty", "tokens", NP);
   test_strtok(0, "one-token", " ", "one-token", NP);
   test_strtok(0, "one-token", "", "one-token", NP);
+  test_strtok(0, "^^^^^^^^^^^^^^^^", "^", NP); /* delims only */
   /* TODO: more thorough testing. */
   return 0;
 }
