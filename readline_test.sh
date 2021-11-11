@@ -21,7 +21,7 @@ for i in "$@"; do
   diff_out=$(diff -u "$expected_file" "$actual_file")
   diff_status=$?
   rm -f "$expected_file" "$actual_file"
-  diff_out=$(printf "%s" "$diff_out" | tr -d '\033') # remove escape codes
+  diff_out=$(printf "%s" "$diff_out" | tr -d '\033\v\f') # trim escape codes
 
   # Trim diff output to 10 lines, 80 chars per line.
   diff_nline=$(printf "%s\n" "$diff_out" | wc -l)
