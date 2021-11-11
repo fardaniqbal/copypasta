@@ -6,8 +6,8 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-expected_outfile=$(mktemp "/tmp/$(basename "$0")-XXXXXX.diff" 2>&1)
-actual_outfile=$(mktemp "/tmp/$(basename "$0")-XXXXXX.diff" 2>&1)
+expected_outfile=$(mktemp "/tmp/rdln-$(basename "$1")-expected.XXXXXX" 2>&1)
+actual_outfile=$(mktemp "/tmp/rdln-$(basename "$1")-actual.XXXXXX" 2>&1)
 cat "$1" > "$expected_outfile"
 ./readline "$1" > "$actual_outfile"
 diff -u "$expected_outfile" "$actual_outfile"
