@@ -1,4 +1,5 @@
 bsearch_r
+qsort_r
 readline
 strlcpy
 strtok_r
