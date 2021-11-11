@@ -13,5 +13,5 @@ cat "$1" > "$expected_outfile"
 diff -u "$expected_outfile" "$actual_outfile"
 status=$?
 rm -f "$expected_outfile" "$actual_outfile"
-echo "diff exited with code $status"
+printf "%-60s status=%d\n" "diff readline vs cat: $1:" $status
 exit $status
