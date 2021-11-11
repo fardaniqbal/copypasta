@@ -1,6 +1,6 @@
 #!/bin/sh
-# Run getline on the given file and diff its output with cat.  Output should be
-# identical for plain text files (ascii/utf8.)
+# Run readline on the given input file and diff its output with the input.
+# Output should be identical to input for plain text files (ascii or utf8.)
 if [ $# -ne 1 ]; then
   echo "Usage: $0 FILE" 1>&2
   exit 1
