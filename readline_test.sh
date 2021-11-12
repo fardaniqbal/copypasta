@@ -1,8 +1,10 @@
 #!/bin/sh
-# Run readline on the given input files and diff its output with the input.
-# Output should be identical to input for plain text files (ascii or utf8.)
 if [ $# -lt 1 ]; then
-  echo "Usage: $0 FILE [...]" 1>&2
+  cat <<EOF
+Usage: $0 FILE [...]
+Run \`readline\` on each input FILE and diff its output with the input.
+Output should be identical to input for plain text files (ascii or utf8.)
+EOF
   exit 1
 fi
 
