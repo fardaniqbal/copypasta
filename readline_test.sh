@@ -24,11 +24,12 @@ for i in "$@"; do
   diff_status=$?
   rm -f "$expected_file" "$actual_file"
   diff_out=$(printf "%s" "$diff_out" | tr -d '\033\v\f') # trim escape codes
+  diff_out=$(printf "%s" "$diff_out" | cut -b 1-79)      # trim to 79 chars
 
-  # Trim diff output to 10 lines, 80 chars per line.
+  # Trim diff output to 10 lines.
   diff_nline=$(printf "%s\n" "$diff_out" | wc -l)
   if [ $diff_nline -gt 10 ]; then
-    diff_out=$(printf "%s" "$diff_out" | cut -b 1-79 |  head -n 9)
+    diff_out=$(printf "%s" "$diff_out" | head -n 9)
     diff_out=$(printf "%s\n(...%d line(s) omitted...)" "$diff_out" \
                $(($diff_nline - 9)))
   fi
