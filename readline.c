@@ -7,10 +7,10 @@
 #undef readline
 #define readline my_readline_ /* avoid name collision with GNU readline */
 
-/* Read a line from FP and return it in a malloc()'d buffer, handling LF and
-   CRLF line endings.  Caller must free() the returned buffer.  Return NULL on
-   EOF or error.  Caller can distinguish EOF vs. i/o error with ferror(FP), and
-   other errors with errno (malloc() failure, etc). */
+/* Read a line from FP and return it in a malloc()'d buffer, handling LF
+   and CRLF line endings.  Caller must free() the returned buffer.  Return
+   NULL on EOF or error (i/o error or malloc failure).  Call feof(FP) to
+   distinguish EOF vs. error. */
 static char *
 readline(FILE *fp)
 {
