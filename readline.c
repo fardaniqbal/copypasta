@@ -57,7 +57,7 @@ main(int argc, char *argv[])
   if (argc == 1) {
     while ((line = readline(stdin)) != NULL)
       puts(line), free(line);
-    if (ferror(stdin))
+    if (!feof(stdin))
       fprintf(stderr, "read error: %s\n", strerror(errno));
   } else {
     while (--argc) {
@@ -69,7 +69,7 @@ main(int argc, char *argv[])
       else {
         while ((line = readline(fp)) != NULL)
           puts(line), free(line);
-        if (ferror(fp))
+        if (!feof(fp))
           fprintf(stderr, "%s: read error: %s\n", file, strerror(errno));
       }
     }
