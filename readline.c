@@ -43,13 +43,13 @@ done:
   return NULL;
 }
 
-/* - test ------------------------------------------------------------------ */
+/* - test -------------------------------------------------------------- */
 
 #include <errno.h>
 #include <string.h>
 
-/* Read each given file line-by-line, and print each line to stdout.  Read from
-   stdin if no file is given on the command line. */
+/* Read each given file line-by-line, and print each line to stdout.  Read
+   from stdin if no file is given on the command line. */
 int
 main(int argc, char *argv[])
 {
