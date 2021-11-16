@@ -1,11 +1,19 @@
+/* Public domain implementation of bsearch_r, a reentrant version of
+   standard C's bsearch function. */
 #include <stdlib.h>
 
-/*
-void *bsearch_r(const void *key, const void *base, size_t nmemb,
-                size_t size,
-                int (*compar)(const void *, const void *, void *),
-                void *arg);
-*/
+/* Binary search for TARGET in CNT-length array ARR of NBYTE-size elements.
+   Assume ARR is sorted ascendingly according to COMPARE(a, b, AUX), which
+   must return negative, zero, or positive if its first argument is
+   respectively less than, equal to, or greater than its second argument.
+   Like ISO C's bsearch, but with extra argument AUX for reentrancy. */
+void *
+bsearch_r(const void *target, const void *arr, size_t cnt, size_t nbyte,
+          int (*compare)(const void *, const void *, void *), void *aux)
+{
+  /* TODO */
+  return NULL;
+}
 
 /* - test -------------------------------------------------------------- */
 
