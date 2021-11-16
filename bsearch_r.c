@@ -8,7 +8,7 @@
    ISO C's bsearch, but with extra argument AUX for reentrancy. */
 void *
 bsearch_r(const void *target, const void *arr, size_t cnt, size_t nbyte,
-          int (*compare)(const void *, const void *, void *), void *aux)
+          int (*compare)(const void *, const void *, void *aux), void *aux)
 {
   /* TODO */
   return NULL;
