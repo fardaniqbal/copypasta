@@ -3,10 +3,9 @@
 #include <stdlib.h>
 
 /* Binary search for TARGET in CNT-length array ARR of NBYTE-size elements.
-   Assume ARR is sorted ascendingly according to COMPARE(a, b, AUX), which
-   must return negative, zero, or positive if its first argument is
-   respectively less than, equal to, or greater than its second argument.
-   Like ISO C's bsearch, but with extra argument AUX for reentrancy. */
+   Return an element that equals TARGET according to 3-way comparison
+   COMPARE.  Assume ARR is sorted ascendingly according to COMPARE.  Like
+   ISO C's bsearch, but with extra argument AUX for reentrancy. */
 void *
 bsearch_r(const void *target, const void *arr, size_t cnt, size_t nbyte,
           int (*compare)(const void *, const void *, void *), void *aux)
