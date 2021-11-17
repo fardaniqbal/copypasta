@@ -2,18 +2,18 @@
    standard C's bsearch function. */
 #include <stdlib.h>
 
-/* Binary search for TARGET in CNT-length array ARR of NBYTE-size elements.
-   Return an element that equals TARGET according to 3-way comparison
-   COMPARE, or NULL if not found.  Assume ARR is sorted ascendingly.  AUX
-   can specify optional context data to pass to COMPARE. */
+/* Binary search for KEY in CNT-length array ARR of NBYTE-size elements.
+   Return an element that equals KEY according to 3-way comparison COMPARE,
+   or NULL if not found.  Assume ARR is sorted ascendingly.  AUX can
+   specify optional context data to pass to COMPARE. */
 static void *
-bsearch_r(const void *target, const void *arr, size_t cnt, size_t nbyte,
+bsearch_r(const void *key, const void *arr, size_t cnt, size_t nbyte,
           int (*compare)(const void *, const void *, void *aux), void *aux)
 {
   size_t lo = 0, hi = cnt;
   while (lo < hi) {
     size_t mid = lo + (hi - lo) / 2;
-    int res = compare(target, (const char *) arr + mid * nbyte, aux);
+    int res = compare(key, (char *) arr + mid * nbyte, aux);
     if (res < 0)
       hi = mid;
     else if (res > 0)
@@ -43,28 +43,28 @@ int_cmp(const void *a, const void *b, void *aux)
 static void
 test_bsearch_empty(void)
 {
-  int tgt = 42;
-  assert(bsearch_r(&tgt, NULL, 0, sizeof tgt, int_cmp, NULL) == NULL);
-  assert(bsearch_r(NULL, NULL, 0, sizeof tgt, int_cmp, NULL) == NULL);
-  assert(bsearch_r(&tgt, &tgt, 0, sizeof tgt, int_cmp, NULL) == NULL);
-  assert(bsearch_r(NULL, &tgt, 0, sizeof tgt, int_cmp, NULL) == NULL);
+  int key = 42;
+  assert(bsearch_r(&key, NULL, 0, sizeof key, int_cmp, NULL) == NULL);
+  assert(bsearch_r(NULL, NULL, 0, sizeof key, int_cmp, NULL) == NULL);
+  assert(bsearch_r(&key, &key, 0, sizeof key, int_cmp, NULL) == NULL);
+  assert(bsearch_r(NULL, &key, 0, sizeof key, int_cmp, NULL) == NULL);
   /* Passing element size 0 is undefined so don't have to test for it. */
 }
 
-/* Make sure that bsearch_r finds TARGET in sorted array ARR if ARR
-   actually contains TARGET.  If TARGET is not in ARR, then make sure that
+/* Make sure that bsearch_r finds KEY in sorted array ARR if ARR
+   actually contains KEY.  If KEY is not in ARR, then make sure that
    bsearch returns NULL. */
 static void
-test_bsearch(int target, const int *arr, size_t cnt)
+test_bsearch(int key, const int *arr, size_t cnt)
 {
-  int *res = bsearch_r(&target, arr, cnt, sizeof *arr, int_cmp, NULL);
+  int *res = bsearch_r(&key, arr, cnt, sizeof *arr, int_cmp, NULL);
   size_t i;
   if (res == NULL) {
     for (i = 0 ; i < cnt; i++)
-      assert(arr[i] != target || !!!"search did not find target");
+      assert(arr[i] != key || !!!"search did not find key");
   } else {
     assert((arr <= res && res < arr+cnt) || !!!"search returned bad ptr");
-    assert(*res == target || !!!"wrong search result");
+    assert(*res == key || !!!"wrong search result");
   }
 }
 
@@ -91,15 +91,15 @@ main(void)
     96, 96, 96, 96, 97, 99
   };
   size_t cnt = sizeof arr / sizeof *arr;
-  size_t start, n, target;
+  size_t start, n, key;
 
   assert(is_sorted(arr, cnt, sizeof *arr, int_cmp, 0));
   test_bsearch_empty();
 
   for (start = 0; start < cnt/2; start++)
     for (n = 0; n < cnt-start; n++)
-      for (target = 0; target <= 100; target++)
-        test_bsearch(target, arr + start, n);
+      for (key = 0; key <= 100; key++)
+        test_bsearch(key, arr + start, n);
 
   fprintf(stderr, "bsearch_r passed all tests\n");
   return 0;
