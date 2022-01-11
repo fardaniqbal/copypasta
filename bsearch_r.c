@@ -10,7 +10,7 @@ static void *
 bsearch_r(const void *key, const void *arr, size_t cnt, size_t nbyte,
           int (*compare)(const void *, const void *, void *aux), void *aux)
 {
-  size_t lo = 0, hi = cnt;
+  size_t lo = 0, hi = cnt; /* lo inclusive, hi exclusive */
   while (lo < hi) {
     size_t mid = lo + (hi - lo) / 2;
     int res = compare(key, (char *) arr + mid * nbyte, aux);
