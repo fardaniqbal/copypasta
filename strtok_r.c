@@ -11,9 +11,9 @@
 #undef strtok_r
 #define strtok_r my_strtok_r_ /* prevent name collision on POSIX systems */
 
-/* Tokenize STR into DELIM-delimited tokens.  A call with non-NULL STR returns
-   the first token.  Follow-up calls with STR = NULL return subsequent tokens.
-   Return NULL when no more tokens remain.  *CONTEXT stores the parser's state
+/* Tokenize STR into DELIM-delimited tokens.  Call with non-NULL STR to get
+   the first token.  Follow-up calls with STR = NULL return subsequent
+   tokens.  Return NULL when no more tokens remain.  *CONTEXT stores state
    between successive calls.  This function writes to STR, so behavior is
    undefined if STR is constant (e.g., "literals like this"). */
 static char *
@@ -27,7 +27,7 @@ strtok_r(char *str, const char *delim, char **context)
   return *tok == '\0' ? NULL : tok;
 }
 
-/* - test ------------------------------------------------------------------ */
+/* - test -------------------------------------------------------------- */
 
 #include <stdarg.h>
 #include <stdio.h>
